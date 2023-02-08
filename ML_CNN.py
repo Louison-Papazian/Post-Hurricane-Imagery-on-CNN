@@ -48,20 +48,26 @@ train_features.shape
 train_labels
 
 # ---- Entrainement d'un modèle XGB a partir des features de sortie du modèle resnet18 ----
-import xgboost as xgb
-dtrain = xgb.DMatrix(train_features, label=train_labels)
-dtest = xgb.DMatrix(test_features, label=test_labels)
+from sklearn.metrics import accuracy_score
 
-#Parametre de base
-param = {'max_depth': 2, 'eta': 1, 'objective': 'binary:logistic'}
-param['nthread'] = 4
-param['eval_metric'] = 'auc'
+from xgboost import XGBClassifier
+classifier = XGBClassifier()
+classifier.fit(train_features, train_labels)
+y_pred = classifier.predict(test_features)
+accuracy_score(test_labels, y_pred)
 
-#Parametre d'evaluation
-evallist = [(dtrain, 'train'), (dtest, 'eval')]
+# ---- Random forest ----
+from sklearn.ensemble import RandomForestClassifier
 
-#Nb boucle
-num_round = 12
+classifier = RandomForestClassifier()
+classifier.fit(train_features, train_labels)
+y_pred = classifier.predict(test_features)
+accuracy_score(test_labels, y_pred)
 
-#Train
-bst = xgb.train(param, dtrain, num_round, evallist)
+# ---- LightGBM ----
+import lightgbm as lgb
+classifier = lgb.LGBMClassifier()
+classifier.fit(train_features, train_labels)
+y_pred = classifier.predict(test_features)
+accuracy_score(test_labels, y_pred)
+
