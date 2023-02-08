@@ -76,6 +76,37 @@ class MediumCNN(ImageClassificationBase):
     
     def forward(self, xb):
         return self.network(xb)
+    
+#rajout dropout   
+class ConvNet(ImageClassificationBase):
+    def __init__(self):
+        super().__init__()
+        self.network = nn.Sequential(
+            nn.Conv2d(3, 32, kernel_size =(3,3)),
+            nn.ReLU(),
+            nn.MaxPool2d(2,2),
+            
+            nn.Conv2d(32, 64, kernel_size =(3,3)),
+            nn.ReLU(),
+            nn.MaxPool2d(2,2),
+            
+            nn.Conv2d(64, 128, kernel_size =(3,3)),
+            nn.ReLU(),
+            nn.MaxPool2d(2,2),
+            
+            nn.Conv2d(128, 128, kernel_size =(3,3)),
+            nn.ReLU(),
+            nn.MaxPool2d(2,2),
+            
+            nn.Flatten(),
+            nn.Dropout(p=0.5),
+            nn.Linear(128*7*7, 512),
+            nn.ReLU(),
+            nn.Linear(512, 2),
+            nn.Sigmoid())
+
+    def forward(self, xb):
+        return self.network(xb)
 
 #Evaluation du modèle pour l'entrainement
 @torch.no_grad()
