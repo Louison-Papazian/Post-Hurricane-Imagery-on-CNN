@@ -149,3 +149,32 @@ def MediumFit(epochs, lr, model, train_loader, val_loader, opt_func = torch.opti
         history.append(result)
     
     return history, model
+
+#Création d'un CNN avec 3 couches de convolution
+class NewCNN(ImageClassificationBase):
+    def __init__(self):
+        super().__init__()
+        self.network = nn.Sequential(
+            
+            nn.Conv2d(3,64, kernel_size=5),
+            nn.ReLU(),
+            nn.MaxPool2d(2,2),
+
+            nn.Conv2d(64,128, kernel_size=5),
+            nn.ReLU(),
+            nn.MaxPool2d(2,2),
+
+            nn.Conv2d(128,128, kernel_size=5),
+            nn.ReLU(),
+            nn.MaxPool2d(2,2),
+
+            nn.Flatten(),
+            nn.Dropout(p=0.5),
+            nn.Linear(128*15*15, 512),
+            nn.ReLU(),
+            nn.Linear(512, 2),
+            nn.Sigmoid()
+        )
+    
+    def forward(self, xb):
+        return self.network(xb)
