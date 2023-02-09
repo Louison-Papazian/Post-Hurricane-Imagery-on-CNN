@@ -24,8 +24,7 @@ class ImageClassificationBase(nn.Module):
         images, labels = batch 
         out = self(images)                  # Generate predictions
         loss = F.cross_entropy(out, labels) # Calculate loss
-        acc = accuracy(out, labels)           # Calculate accuracy
-        return {'train_loss': loss.detach(), 'acc': acc}
+        return loss
     
     def validation_step(self, batch):
         images, labels = batch 
@@ -42,8 +41,8 @@ class ImageClassificationBase(nn.Module):
         return {'val_loss': epoch_loss.item(), 'val_acc': epoch_acc.item()}
     
     def epoch_end(self, epoch, result):
-        print("Epoch [{}], train_loss: {:.4f},acc: {:.4f}, val_loss: {:.4f}, val_acc: {:.4f}".format(
-            epoch, result['train_loss'], result["acc"] , result['val_loss'], result['val_acc']))
+        print("Epoch [{}], train_loss: {:.4f}, val_loss: {:.4f}, val_acc: {:.4f}".format(
+            epoch, result['train_loss'], result['val_loss'], result['val_acc']))
 
 
 #Model de l'article en pytorch avec comme base la classe de suivi des modèles
