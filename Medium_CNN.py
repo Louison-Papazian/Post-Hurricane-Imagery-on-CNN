@@ -9,6 +9,9 @@ Méthode medium.com
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+import pandas as pd
+import matplotlib.pyplot as plt
+
 
 #Fonction permettant d'obtenir l'accuracy des modèles
 def accuracy(outputs, labels):
@@ -150,6 +153,38 @@ def MediumFit(epochs, lr, model, train_loader, val_loader, opt_func = torch.opti
     
     return history, model
 
+
+#modification du CNN de base
+class ConvNet_mod(ImageClassificationBase):
+    def __init__(self):
+        super().__init__()
+        self.network = nn.Sequential(
+            nn.Conv2d(3, 32, kernel_size =(3,3), padding=1),
+            nn.ReLU(),
+            nn.MaxPool2d(2,2),
+            
+            nn.Conv2d(32, 64, kernel_size =(3,3), padding=1),
+            nn.ReLU(),
+            nn.MaxPool2d(2,2),
+            
+            nn.Conv2d(64, 128, kernel_size =(3,3), padding=1),
+            nn.ReLU(),
+            nn.MaxPool2d(2,2),
+            
+            nn.Conv2d(128, 128, kernel_size =(3,3), padding=1),
+            nn.ReLU(),
+            nn.MaxPool2d(2,2),
+            
+            nn.Flatten(),
+            nn.Linear(128*9*9, 512),
+            nn.ReLU(),
+            nn.Linear(512, 2),
+            nn.Sigmoid())
+
+    def forward(self, xb):
+        return self.network(xb)
+
+
 #Création d'un CNN avec 3 couches de convolution
 class NewCNN(ImageClassificationBase):
     def __init__(self):
@@ -178,3 +213,24 @@ class NewCNN(ImageClassificationBase):
     
     def forward(self, xb):
         return self.network(xb)
+
+    
+# création de plot pour l'accuracy et les loss
+def plot_accuracy(history):
+    """ Plot the history of accuracies"""
+    accuracies = [x['val_acc'] for x in history]
+    plt.plot(accuracies, '-x')
+    plt.xlabel('epoch')
+    plt.ylabel('accuracy')
+    plt.title('Accuracy vs. No. of epochs');
+    
+def plot_loss(history):
+    """ Plot the losses in each epoch"""
+    train_losses = [x.get('train_loss') for x in history]
+    val_losses = [x['val_loss'] for x in history]
+    plt.plot(train_losses, '-bx')
+    plt.plot(val_losses, '-rx')
+    plt.xlabel('epoch')
+    plt.ylabel('loss')
+    plt.legend(['Training', 'Validation'])
+    plt.title('Loss vs. No. of epochs');
